@@ -77,6 +77,27 @@ p { max-width: 34em; }
 .layer { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; text-align: center; padding: calc(4.4rem + env(safe-area-inset-top)) 1.5rem max(2.5rem, env(safe-area-inset-bottom)); transition: opacity 1s var(--ease), visibility 1s; }
 .layer.off { opacity: 0; visibility: hidden; pointer-events: none; }
 
+/* Modified Circular Knock Button */
+#knock {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 1px solid var(--cream);
+  color: var(--cream);
+  background: rgba(26,40,30,0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.4;
+  padding: 1rem;
+}
+@media (hover: hover) { #knock:hover { background: var(--gold); border-color: var(--gold); color: var(--forest); transform: scale(1.05); } }
+
 #gate .small { text-shadow: 0 1px 8px rgba(0,0,0,0.4); }
 #gate .names { text-shadow: 0 2px 18px rgba(0,0,0,0.4); margin-bottom: 2rem; }
 .badge { font-size: 0.65rem; letter-spacing: 0.14em; opacity: 0.8; margin-top: 1rem; color: var(--gold); }
@@ -214,18 +235,13 @@ footer .names { font-size: 2.4rem; text-shadow: none; color: var(--gold); }
 
 <!-- STAGE: closed doors → knock → doors open (reference video) → hero -->
 <header id="stage">
-  <!-- Tiny inline base64 poster of a solid sage green to ensure immediate fill, followed by #t hack -->
-  <video id="vid" playsinline muted preload="auto" poster="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO8+O//fwAJ+gPn4R6cIQAAAABJRU5ErkJggg==" aria-hidden="true"></video>
+  <!-- Removed poster attribute so actual first frame shows -->
+  <video id="vid" playsinline muted preload="auto" aria-hidden="true"></video>
   <div class="shade"></div>
 
-  <div class="layer" id="gate">
-    <p class="small" id="g1">You are cordially invited</p>
-    <div>
-      <p class="small" id="g2" style="margin-bottom:0.8rem">To celebrate the wedding of</p>
-      <h1 class="names" id="gNames"></h1>
-      <button class="btn" id="knock" style="margin-top:2rem;color:var(--cream);border-color:var(--cream)">Tap to knock and enter</button>
-      <p class="badge" id="previewNote" hidden>Preview with sample content</p>
-    </div>
+  <!-- Centered container with circular open button -->
+  <div class="layer" id="gate" style="justify-content: center;">
+    <button class="btn" id="knock">Tap to open</button>
   </div>
   
   <div class="ctl" id="ctl">
@@ -414,8 +430,8 @@ const hasTime = /^\d{2}:\d{2}$/.test(C.weddingStartTime);
 
 /* ---------- DOM Population ---------- */
 document.title = names ? `${names} — Wedding Invitation` : "Wedding Invitation";
-$("gNames").innerHTML = nameHTML; $("hNames").innerHTML = nameHTML;
-$("previewNote").hidden = !(C.previewMode && (!C.brideName || !C.groomName));
+$("hNames").innerHTML = nameHTML; 
+
 const dateLong = hasDate ? fmtDate(C.weddingDate, { day: "numeric", month: "long", year: "numeric" }) : "";
 $("hMeta").textContent = [dateLong, C.venueName].filter(Boolean).join("  ·  ");
 $("welcomeMsg").textContent = C.invitationMessage;
@@ -632,24 +648,5 @@ $("skip").addEventListener("click", () => enter(true));
 if (reduce || !C.introVideoUrl) enter(true);
 
 </script>
-<!-- 
-=========================================================
-DELIVERABLES REPORT:
-1. Index.html provided complete.
-2. Assets needed: 
-   - 'assets/intro.mp4' and 'assets/intro.webm' (fallback videos if URL fails).
-   - The couple photos must remain valid URLs or placed locally and updated in config.
-3. Customization Guide:
-   - Edit the WEDDING_CONFIG object at the top of the <script> block to change names, dates, colors, events, and RSVP details. Change previewMode to false to remove the dummy label.
-4. Reference Fidelity:
-   - The palette is tuned to the rich sage and forest greens of the provided velvet video, transitioning smoothly down into stone, paper and cream. The opening seal breaking animation is played exactly as provided.
-5. QA Report:
-   - Mobile responsive (tested up to 4K desktop).
-   - IntersectionObserver clip-path bug bypassed via wrapper elements.
-   - RSVP disables correctly without a destination.
-   - Fallback timeout handles broken videos gracefully.
-=========================================================
--->
 </body>
 </html>
-
